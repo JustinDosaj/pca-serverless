@@ -1,0 +1,19 @@
+# Environment Variables
+.env
+/frontend/.env
+/backend/.env
+
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Terraform CLI configuration files
+*.terraform.lock.hcl
+
+# Node modules (if any)
+node_modules/
+
+# Lambda function zip files
+lambda_functions.zip
