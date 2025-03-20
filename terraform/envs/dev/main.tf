@@ -17,7 +17,7 @@ module "chat_completion" {
 module "ChatCompletionAPI" {
     source = "../../modules/api-gateway"
     environment = "dev"
-    chat_completion_invoke_arn = module.chat_completion.chat_completion_uri
+    chat_completion_invoke_arn = module.chat_completion.chat_completion_invoke_arn
     chat_completion_arn = module.chat_completion.chat_completion_arn
 }
 

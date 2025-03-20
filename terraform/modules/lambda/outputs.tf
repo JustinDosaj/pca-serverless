@@ -1,4 +1,4 @@
-output "chat_completion_uri" {
+output "chat_completion_invoke_arn" {
     value = aws_lambda_function.chat_completion.invoke_arn
 }
 
