@@ -6,10 +6,6 @@ variable "environment" {
     default = "dev"
 }
 
-variable "function_name" {
-    default = "DEV_hello_world"
-}
-
 variable "handler" {
     default = "handler"
 }
