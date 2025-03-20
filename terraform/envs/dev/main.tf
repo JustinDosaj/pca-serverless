@@ -10,7 +10,7 @@ module "iam_for_lambda" {
 
 module "lambda" {
     source = "../../modules/lambda"
-    function_name = "dev_hello_world"
+    environment = "dev"
     handler = "handler"
     iam_role_arn = module.iam_for_lambda.iam_role_arn
 }

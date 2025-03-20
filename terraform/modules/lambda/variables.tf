@@ -2,7 +2,7 @@ variable "region" {
     default = "us-west-1"
 }
 
-variable "env" {
+variable "environment" {
     default = "dev"
 }
 
@@ -12,10 +12,6 @@ variable "function_name" {
 
 variable "handler" {
     default = "handler"
-}
-
-variable "lambda_functions" {
-    default = "lambda_functions.zip"
 }
 
 variable "iam_role_arn" {
