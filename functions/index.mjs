@@ -1,6 +1,14 @@
-exports.handler = async (event) => {
-    return {
+export const handler = async (event) => {
+    const res = {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Hello from Lambda!' }),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            success: "true"
+        })
     };
-};
+
+    return res;
+}

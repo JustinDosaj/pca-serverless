@@ -8,10 +8,17 @@ module "iam_for_lambda" {
     environment = "dev"
 }
 
-module "lambda" {
+module "chat_completion" {
     source = "../../modules/lambda"
     environment = "dev"
-    handler = "handler"
     iam_role_arn = module.iam_for_lambda.iam_role_arn
 }
+
+module "ChatCompletionAPI" {
+    source = "../../modules/api-gateway"
+    environment = "dev"
+    chat_completion_invoke_arn = module.chat_completion.chat_completion_uri
+    chat_completion_arn = module.chat_completion.chat_completion_arn
+}
+
 
