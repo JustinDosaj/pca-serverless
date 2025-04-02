@@ -9,7 +9,9 @@ const openai = new OpenAI({
 export const handler = async (event) => {
   try {
 
-    console.log(openai)
+    const params = JSON.parse(event.body)
+
+    const message = params.message || 'Write a one sentence story about a unicorn.'
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -20,12 +22,10 @@ export const handler = async (event) => {
         },
         { 
             role: "user", 
-            content: event.message || "Write a one sentence story about a unicorn." 
+            content: message
         }
       ],
     });
-
-    console.log("Completion: ", completion)
 
     return {
       statusCode: 200,
@@ -34,7 +34,7 @@ export const handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: completion.choices[0].message.content
+        content: completion.choices[0].message.content
       })
     };
   } catch (error) {
