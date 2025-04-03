@@ -5,7 +5,9 @@ provider "aws" {
 
 module "iam_for_lambda" {
     source = "../../modules/iam"
+    account_id = "211125545153"
     environment = var.environment
+    api_id = module.ChatCompletionAPI.api_id
 }
 
 module "chat_completion" {

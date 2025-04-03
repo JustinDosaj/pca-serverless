@@ -27,6 +27,8 @@ export const handler = async (event) => {
       ],
     });
 
+    const content = completion.choices[0].message.content
+
     return {
       statusCode: 200,
       headers: {
@@ -34,7 +36,7 @@ export const handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        content: completion.choices[0].message.content
+        content: content
       })
     };
   } catch (error) {
