@@ -3,6 +3,13 @@ resource "aws_apigatewayv2_api" "chat_completion_api" {
   name          = "${var.environment}_chat_completion_api"
   protocol_type = "HTTP"
   description   = "API for chat completion with streaming support"
+  cors_configuration {
+    allow_credentials = true
+    allow_headers     = ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"]
+    allow_methods     = ["POST", "OPTIONS"]
+    allow_origins     = ["http://localhost:3000"] # Add your frontend origins here
+    max_age           = 240 # 3 minutes
+  }
 }
 
 # JWT Authorizer connected to your Amplify-created Cognito User Pool
@@ -44,6 +51,10 @@ resource "aws_apigatewayv2_stage" "chat_stage" {
   api_id = aws_apigatewayv2_api.chat_completion_api.id
   name   = var.environment
   auto_deploy = true
+  default_route_settings {
+    throttling_burst_limit = 100
+    throttling_rate_limit = 50
+  }
 }
 
 # Lambda permissions
