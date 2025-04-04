@@ -11,23 +11,6 @@ resource "aws_iam_role" "iam_for_lambda" {
   })
 }
 
-# Define IAM policy for Lambda to interact with API Gateway WebSocket connections
-resource "aws_iam_policy" "lambda_api_gateway_policy" {
-  name        = "LambdaApiGatewayPolicy"
-  description = "Policy that allows Lambda to post messages to WebSocket connections"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action   = "execute-api:ManageConnections"
-        Effect   = "Allow"
-        Resource = "arn:aws:execute-api:${var.region}:${var.account_id}:${var.api_id}/*/POST/@connections/*"
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role_policy" "lambda_logs" {
   name   = "lambda-logs-policy"
   role   = aws_iam_role.iam_for_lambda.name
