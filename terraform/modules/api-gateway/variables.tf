@@ -15,10 +15,17 @@ variable "chat_completion_arn" {
     description = "ARN for lambda function"
 }
 
-variable cognito_user_pool_client_id {
-    default = "30oarcfi7d6rseca2234957fm6"
+variable "cognito_user_pool_client_id" {
+    description = "Cognito user pool client id"
+    type = string
 }
 
-variable cognito_user_pool_id {
-    default = "us-west-1_9ZbuQizvZ"
+variable "cognito_user_pool_id" {
+    description = "Cognito user pool id"
+    type = string
+}
+
+variable "chat_completion_function_url" {
+    description = "Chat Completion function URL"
+    type = string
 }

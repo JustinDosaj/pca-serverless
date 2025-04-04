@@ -40,3 +40,16 @@ resource "aws_lambda_function" "chat_completion" {
       }
     }
 }
+
+resource "aws_lambda_function_url" "chat_completion_url" {
+  function_name = aws_lambda_function.chat_completion.function_name
+  authorization_type = "NONE"
+
+  cors {
+    allow_credentials = true
+    allow_origins     = ["http://localhost:3000"]  # Match your API Gateway CORS
+    allow_methods     = ["POST"]
+    allow_headers     = ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"]
+    max_age           = 240
+  }
+}
