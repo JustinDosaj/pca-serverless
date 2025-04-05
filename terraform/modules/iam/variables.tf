@@ -17,3 +17,9 @@ variable "account_id" {
     type = string
     description = "Account ID"
 }
+
+
+variable "chat_table_arn" {
+    type = string
+    description = "ARN for chat history table in DynamoDB"
+}
