@@ -1,31 +1,34 @@
 variable "region" {
+    type = string
     default = "us-west-1"
 }
 
 variable "environment" {
+    type = string
     default = "dev"
 }
 
 variable "chat_completion_invoke_arn" {
-  description = "Invoke ARN for chat_completion function"
-  type        = string
+    type        = string
+    description = "Invoke ARN for chat_completion function"
 }
 
 variable "chat_completion_arn" {
+    type = string
     description = "ARN for lambda function"
 }
 
 variable "cognito_user_pool_client_id" {
-    description = "Cognito user pool client id"
     type = string
+    description = "Cognito user pool client id"
 }
 
 variable "cognito_user_pool_id" {
-    description = "Cognito user pool id"
     type = string
+    description = "Cognito user pool id"
 }
 
 variable "chat_completion_function_url" {
-    description = "Chat Completion function URL"
     type = string
+    description = "Chat Completion function URL"
 }
