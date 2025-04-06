@@ -48,18 +48,15 @@ resource "aws_iam_policy" "dynamodb_chat_access" {
           "dynamodb:DeleteItem",
           "dynamodb:Scan"
         ],
-        Resource = [
-          "${var.chat_table_arn}",
-          "${var.chat_table_arn}/index/*" # access to GSIs
-        ],
-        Condition = {
-            "ForAllValues:StringEquals": {
-            "dynamodb:LeadingKeys": [
-                "USER#$$${cognito-identity.amazonaws.com:sub}"
-            ]
-            }
-        }
+        Resource = "*",
+
+        //
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamo_attach" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.dynamodb_chat_access.arn
 }
