@@ -20,6 +20,8 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body)
     const message = body.message || 'Write a one sentence story about a unicorn.'
     const chatId = body.chatId || uuidv4()
+    const botuuid = uuidv4()
+    const useruuid = uuidv4()
     const timestamp = Date.now()
 
     // Send to OpenAI
@@ -38,11 +40,11 @@ export const handler = async (event) => {
       TableName: TABLE_NAME,
       Item: {
         userId: userSub,
-        sortKey: `MSG#${timestamp}`,
+        sortKey: `MSG#${useruuid}`,
         chatId,
         role: "user",
         content: message,
-        timestamp,
+        timestamp: timestamp,
         lastUpdated: timestamp,
       }
     }))
@@ -52,9 +54,9 @@ export const handler = async (event) => {
       TableName: TABLE_NAME,
       Item: {
         userId: userSub,
-        sortKey: `MSG#${timestamp + 1}`, // +1 to ensure it's after the user message
+        sortKey: `MSG#${botuuid}`, // +1 to ensure it's after the user message
         chatId,
-        role: "assistant",
+        role: "bot",
         content: response,
         timestamp: timestamp + 1,
         lastUpdated: timestamp + 1,
