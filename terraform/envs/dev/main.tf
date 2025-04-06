@@ -8,7 +8,9 @@ module "iam_module" {
     account_id = "211125545153"
     environment = var.environment
     api_id = module.api_gateway_module.api_id
-    chat_table_arn = module.dynamodb_module.chat_table_arn
+    users_table_arn = module.dynamodb_module.users_table_arn
+    conversations_table_arn = module.dynamodb_module.conversations_table_arn
+    messages_table_arn = module.dynamodb_module.messages_table_arn
 }
 
 module "lambda_module" {

@@ -18,8 +18,17 @@ variable "account_id" {
     description = "Account ID"
 }
 
-
-variable "chat_table_arn" {
+variable "users_table_arn" {
     type = string
-    description = "ARN for chat history table in DynamoDB"
+    description = "ARN for users table in DynamoDB"
+}
+
+variable "conversations_table_arn" {
+    type = string
+    description = "ARN for conversations table in DynamoDB"
+}
+
+variable "messages_table_arn" {
+    type = string
+    description = "ARN for messages table in DynamoDB"
 }

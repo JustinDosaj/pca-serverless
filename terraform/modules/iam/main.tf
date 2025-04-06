@@ -49,8 +49,6 @@ resource "aws_iam_policy" "dynamodb_chat_access" {
           "dynamodb:Scan"
         ],
         Resource = "*",
-
-        //
       }
     ]
   })
