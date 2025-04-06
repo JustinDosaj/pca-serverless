@@ -15,12 +15,11 @@ const MESSAGES_TABLE_NAME = 'dev_Messages'
 
 export const handler = async (event) => {
 
-    console.log("Event: ", event.requestContext.authorizer.jwt.claims.sub)
-
     try {
         const userId = event.requestContext.authorizer.jwt.claims.sub // from Cognito JWT
         const body = JSON.parse(event.body)
         const message = body.message || 'Write a one sentence story about a unicorn.'
+        const title = body.title || message.slice(0,30)
         const conversationId = body.conversationId || uuidv4()
         const timestamp = Date.now()
         const timestamp_response = timestamp + 1 // Ensure timestamp is never equal
@@ -66,6 +65,7 @@ export const handler = async (event) => {
             Item: {
                 userId: userId,
                 conversationId: conversationId,
+                title: title,
                 createdAt: timestamp,
                 lastUpdated: timestamp_response,
                 type: "chatMeta"

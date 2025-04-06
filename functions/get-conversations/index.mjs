@@ -16,8 +16,6 @@ export const handler = async (event) => {
                 }
             }));
 
-        console.log("Conversations: ", result.Items);
-
         return {
             statusCode: 200,
                 headers: {
