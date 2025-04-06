@@ -79,7 +79,7 @@ export const handler = async (event) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                conversationId,
+                conversationId: conversationId,
                 content: response
             })
         }

@@ -23,10 +23,16 @@ module "lambda_module" {
 module "api_gateway_module" {
     source                        = "../../modules/api-gateway"
     environment                   = var.environment
+    region                        = var.region
+
+    # Chat Completion ARN & Function URL
     chat_completion_invoke_arn    = module.lambda_module.chat_completion_invoke_arn
     chat_completion_arn           = module.lambda_module.chat_completion_arn
     chat_completion_function_url  = module.lambda_module.chat_completion_function_url
-    region                        = var.region
+
+    # Get Conversations ARN
+    get_conversations_arn = module.lambda_module.get_conversations_arn
+    get_conversations_invoke_arn = module.lambda_module.get_conversations_invoke_arn
     
     # Add these variables with values from your Amplify project
     cognito_user_pool_id       = "us-west-1_9ZbuQizvZ" # Replace with your actual Amplify-created User Pool ID

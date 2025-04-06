@@ -6,7 +6,7 @@ resource "aws_apigatewayv2_api" "chat_completion_api" {
   cors_configuration {
     allow_credentials = true
     allow_headers     = ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"]
-    allow_methods     = ["POST", "OPTIONS"]
+    allow_methods     = ["POST", "GET", "OPTIONS"]
     allow_origins     = ["http://localhost:3000"] # Add your frontend origins here
     max_age           = 240 # 3 minutes
   }
@@ -31,10 +31,10 @@ resource "aws_apigatewayv2_integration" "chat_integration" {
   integration_type   = "AWS_PROXY"
   integration_method = "POST"
   integration_uri    = var.chat_completion_invoke_arn
-  payload_format_version = "2.0"  # Use the newer format for HTTP APIs
+  payload_format_version = "2.0"
 }
 
-# Route for your chat endpoint with authorization - CORRECTED
+# Route for your chat endpoint with authorization
 resource "aws_apigatewayv2_route" "chat_route" {
   api_id    = aws_apigatewayv2_api.chat_completion_api.id
   route_key = "POST /chat-completion"
@@ -44,6 +44,27 @@ resource "aws_apigatewayv2_route" "chat_route" {
   
   # Link directly to the integration
   target = "integrations/${aws_apigatewayv2_integration.chat_integration.id}"
+}
+
+# Integration between API and get conversation function
+resource "aws_apigatewayv2_integration" "get_conversations_integration" {
+  api_id             = aws_apigatewayv2_api.chat_completion_api.id
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+  integration_uri    = var.get_conversations_invoke_arn # TODO: Swap to new lambad function invoke arn
+  payload_format_version = "2.0" 
+}
+
+# Route for your chat endpoint with authorization - CORRECTED
+resource "aws_apigatewayv2_route" "get_conversations_route" {
+  api_id    = aws_apigatewayv2_api.chat_completion_api.id
+  route_key = "GET /get-conversations"
+  
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+  
+  # Link directly to the integration
+  target = "integrations/${aws_apigatewayv2_integration.get_conversations_integration.id}" # TODO: Change integration to conversation function
 }
 
 # Stage for the API - With auto deploy enabled
@@ -66,4 +87,14 @@ resource "aws_lambda_permission" "chat_completion_permission" {
   
   # More specific source_arn for HTTP API
   source_arn = "${aws_apigatewayv2_api.chat_completion_api.execution_arn}/*/*/chat-completion"
+}
+
+resource "aws_lambda_permission" "get_conversations_permission" {
+  statement_id  = "AllowChatAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.environment}_get_conversations"
+  principal     = "apigateway.amazonaws.com"
+  
+  # More specific source_arn for HTTP API
+  source_arn = "${aws_apigatewayv2_api.chat_completion_api.execution_arn}/*/*/get-conversations"
 }

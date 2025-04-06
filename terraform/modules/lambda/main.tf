@@ -1,3 +1,4 @@
+# Layers
 data "archive_file" "chat_packages_zip" {
     type = "zip"
     source_dir = "${path.root}/../../../layers/chat-layer"
@@ -14,6 +15,7 @@ resource "aws_lambda_layer_version" "chat_layer" {
     compatible_runtimes = ["nodejs22.x"]
 }
 
+# Completions
 data "archive_file" "chat_completion_zip" {
     type = "zip"
     source_dir = "${path.root}/../../../functions/chat-completion"
@@ -39,6 +41,27 @@ resource "aws_lambda_function" "chat_completion" {
         OPENAI_API_KEY = "${var.openai_api_key}"
       }
     }
+}
+
+# Conversations
+data "archive_file" "get_conversations_zip" {
+  type = "zip"
+  source_dir = "${path.root}/../../../functions/get-conversations"
+  output_path = "${path.root}/builds/get-conversations.zip"
+}
+
+resource "aws_lambda_function" "get_conversations" {
+  function_name = "${var.environment}_get_conversations"
+  handler = "index.handler"
+  runtime = "nodejs22.x"
+
+  filename = data.archive_file.get_conversations_zip.output_path
+  source_code_hash = data.archive_file.get_conversations_zip.output_base64sha256
+  
+  role = "${var.iam_role_arn}"    
+  timeout = 30
+  memory_size = 256
+
 }
 
 resource "aws_lambda_function_url" "chat_completion_url" {
