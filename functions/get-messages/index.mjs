@@ -6,11 +6,15 @@ const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west
 const MESSAGES_TABLE_NAME = 'dev_Messages';
 
 export const handler = async (event) => {
+
+    console.log("Event", event)
+    
     try {
         
         const userId = event.requestContext.authorizer.jwt.claims.sub
-        const body = JSON.parse(event.body)
-        const conversationId = body.conversationId || ''
+        const conversationId = event.queryStringParameters.conversationId || ''
+
+        console.log("ID: ", conversationId)
 
         const result = await dynamo.send(new QueryCommand({
             TableName: MESSAGES_TABLE_NAME,
