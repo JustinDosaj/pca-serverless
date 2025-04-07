@@ -51,7 +51,7 @@ resource "aws_apigatewayv2_integration" "get_conversations_integration" {
   api_id             = aws_apigatewayv2_api.chat_completion_api.id
   integration_type   = "AWS_PROXY"
   integration_method = "POST"
-  integration_uri    = var.get_conversations_invoke_arn # TODO: Swap to new lambad function invoke arn
+  integration_uri    = var.get_conversations_invoke_arn
   payload_format_version = "2.0" 
 }
 
@@ -64,18 +64,38 @@ resource "aws_apigatewayv2_route" "get_conversations_route" {
   authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
   
   # Link directly to the integration
-  target = "integrations/${aws_apigatewayv2_integration.get_conversations_integration.id}" # TODO: Change integration to conversation function
+  target = "integrations/${aws_apigatewayv2_integration.get_conversations_integration.id}"
+}
+
+# Inegration between API and get messages function
+resource "aws_apigatewayv2_integration" "get_messages_integration" {
+  api_id             = aws_apigatewayv2_api.chat_completion_api.id
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+  integration_uri    = var.get_messages_invoke_arn
+  payload_format_version = "2.0" 
+}
+
+resource "aws_apigatewayv2_route" "get_messages_route" {
+  api_id    = aws_apigatewayv2_api.chat_completion_api.id
+  route_key = "GET /get-messages"
+  
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+  
+  # Link directly to the integration
+  target = "integrations/${aws_apigatewayv2_integration.get_messages_integration.id}"
 }
 
 # Stage for the API - With auto deploy enabled
 resource "aws_apigatewayv2_stage" "chat_stage" {
-  api_id = aws_apigatewayv2_api.chat_completion_api.id
-  name   = var.environment
-  auto_deploy = true
-  default_route_settings {
-    throttling_burst_limit = 100
-    throttling_rate_limit = 50
-  }
+    api_id = aws_apigatewayv2_api.chat_completion_api.id
+    name   = var.environment
+    auto_deploy = true
+    default_route_settings {
+        throttling_burst_limit = 100
+        throttling_rate_limit = 50
+    }
 }
 
 # Lambda permissions
@@ -97,4 +117,14 @@ resource "aws_lambda_permission" "get_conversations_permission" {
   
   # More specific source_arn for HTTP API
   source_arn = "${aws_apigatewayv2_api.chat_completion_api.execution_arn}/*/*/get-conversations"
+}
+
+resource "aws_lambda_permission" "get_messages_permission" {
+  statement_id  = "AllowChatAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.environment}_get_messages"
+  principal     = "apigateway.amazonaws.com"
+  
+  # More specific source_arn for HTTP API
+  source_arn = "${aws_apigatewayv2_api.chat_completion_api.execution_arn}/*/*/get-messages"
 }

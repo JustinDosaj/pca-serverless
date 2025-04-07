@@ -14,26 +14,18 @@ variable "chat_completion_invoke_arn" {
     description = "Invoke ARN for chat_completion function"
 }
 
-variable "chat_completion_arn" {
-    type = string
-    description = "ARN for lambda function"
-}
-
-variable "chat_completion_function_url" {
-    type = string
-    description = "Chat Completion function URL"
-}
-
 # Get Conversation
 variable "get_conversations_invoke_arn" {
     type = string
     description = "Get Conversations Invoke ARN"
 }
 
-variable "get_conversations_arn" {
+# Get Messages
+variable "get_messages_invoke_arn" {
     type = string
-    description = "Get Converastions ARN"
+    description = "Get Conversations Invoke ARN"
 }
+
 
 # Cognito
 variable "cognito_user_pool_client_id" {

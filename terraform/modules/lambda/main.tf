@@ -37,42 +37,48 @@ resource "aws_lambda_function" "chat_completion" {
     memory_size = 256
 
     environment {
-      variables = {
-        OPENAI_API_KEY = "${var.openai_api_key}"
-      }
+        variables = {
+            OPENAI_API_KEY = "${var.openai_api_key}"
+        }
     }
 }
 
 # Conversations
 data "archive_file" "get_conversations_zip" {
-  type = "zip"
-  source_dir = "${path.root}/../../../functions/get-conversations"
-  output_path = "${path.root}/builds/get-conversations.zip"
+    type = "zip"
+    source_dir = "${path.root}/../../../functions/get-conversations"
+    output_path = "${path.root}/builds/get-conversations.zip"
 }
 
 resource "aws_lambda_function" "get_conversations" {
-  function_name = "${var.environment}_get_conversations"
-  handler = "index.handler"
-  runtime = "nodejs22.x"
+    function_name = "${var.environment}_get_conversations"
+    handler = "index.handler"
+    runtime = "nodejs22.x"
 
-  filename = data.archive_file.get_conversations_zip.output_path
-  source_code_hash = data.archive_file.get_conversations_zip.output_base64sha256
-  
-  role = "${var.iam_role_arn}"    
-  timeout = 30
-  memory_size = 256
+    filename = data.archive_file.get_conversations_zip.output_path
+    source_code_hash = data.archive_file.get_conversations_zip.output_base64sha256
+    
+    role = "${var.iam_role_arn}"    
+    timeout = 10
+    memory_size = 256
 
 }
 
-resource "aws_lambda_function_url" "chat_completion_url" {
-  function_name = aws_lambda_function.chat_completion.function_name
-  authorization_type = "NONE"
+data "archive_file" "get_messages_zip" {
+    type = "zip"
+    source_dir = "${path.root}/../../../functions/get-messages"
+    output_path = "${path.root}/builds/get-messages.zip"
+}
 
-  cors {
-    allow_credentials = true
-    allow_origins     = ["http://localhost:3000"]  # Match your API Gateway CORS
-    allow_methods     = ["POST"]
-    allow_headers     = ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"]
-    max_age           = 240
-  }
+resource "aws_lambda_function" "get_messages" {
+    function_name = "${var.environment}_get_messages"
+    handler = "index.handler"
+    runtime = "nodejs22.x"
+
+    filename = data.archive_file.get_messages_zip.output_path
+    source_code_hash = data.archive_file.get_messages_zip.output_base64sha256
+    
+    role = "${var.iam_role_arn}"    
+    timeout = 10
+    memory_size = 256
 }
