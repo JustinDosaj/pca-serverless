@@ -1,7 +1,7 @@
 // functions/chat-completion/index.js
 import OpenAI from "openai"
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb"
+import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb"
 import { v4 as uuidv4 } from "uuid"
 
 // Init OpenAI
@@ -19,10 +19,36 @@ export const handler = async (event) => {
         const userId = event.requestContext.authorizer.jwt.claims.sub // from Cognito JWT
         const body = JSON.parse(event.body)
         const message = body.message || 'Write a one sentence story about a unicorn.'
-        const title = body.title || message.slice(0,30)
-        const conversationId = body.conversationId || uuidv4()
+        const conversationId = body.conversationId || uuidv4() 
         const timestamp = Date.now()
         const timestamp_response = timestamp + 1 // Ensure timestamp is never equal
+
+        let title = !body.conversationId ? message.slice(0, 30) : ''
+
+        // If body conversationId exists --> title exists and must be retrieved
+        if (body.conversationId) {
+        
+            try {
+                const result = await dynamo.send(new QueryCommand({
+                    TableName: CONVERSATIONS_TABLE_NAME,
+                    KeyConditionExpression: "userId = :uid AND conversationId = :cid",
+                    ExpressionAttributeValues: {
+                        ":uid": userId,
+                        ":cid": conversationId
+                    }
+                }));
+
+                console.log("RESULT: ", result)
+
+                if (result.Items) {
+                    title = result.Items[0].title;
+                    console.log("EXISTING TITLE: ", title)
+                }
+
+            } catch (err) {
+                console.error("Error fetching existing conversation:", err);
+            }
+        }
 
         // Send to OpenAI
         const completion = await openai.chat.completions.create({
