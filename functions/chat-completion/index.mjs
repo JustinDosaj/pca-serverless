@@ -60,6 +60,8 @@ export const handler = async (event) => {
         })
 
         const response = completion.choices[0].message.content
+        const currentUnixTime = Math.floor(timestamp / 1000)
+        const expiresAt = currentUnixTime + 30 * 24 * 60 * 60
 
         // Store user message
         await dynamo.send(new PutCommand({
@@ -70,6 +72,7 @@ export const handler = async (event) => {
                 sender: "user",
                 content: message,
                 timestamp: timestamp,
+                expiresAt: expiresAt,
             }
         }))
 
@@ -82,6 +85,7 @@ export const handler = async (event) => {
                 sender: "bot",
                 content: response,
                 timestamp: timestamp_response,
+                expiresAt: expiresAt,
             }
         }))
 
@@ -94,7 +98,8 @@ export const handler = async (event) => {
                 title: title,
                 createdAt: timestamp,
                 lastUpdated: timestamp_response,
-                type: "chatMeta"
+                type: "chatMeta",
+                expiresAt: expiresAt,
             }
         }))
 

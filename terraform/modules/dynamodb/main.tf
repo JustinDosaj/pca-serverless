@@ -46,6 +46,11 @@ resource "aws_dynamodb_table" "conversations_table" {
         name = "${var.environment}_Conversations"
         environment = var.environment
     }
+
+    ttl {
+        attribute_name = "expiresAt"
+        enabled = true
+    }
 }
 
 resource "aws_dynamodb_table" "messages_table" {
