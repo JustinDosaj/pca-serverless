@@ -6,15 +6,17 @@ const CONVERSATIONS_TABLE_NAME = 'dev_Conversations';
 
 export const handler = async (event) => {
     try {
-            const userId = event.requestContext.authorizer.jwt.claims.sub;
+        const userId = event.requestContext.authorizer.jwt.claims.sub;
 
-            const result = await dynamo.send(new QueryCommand({
-                TableName: CONVERSATIONS_TABLE_NAME,
-                KeyConditionExpression: "userId = :uid",
-                ExpressionAttributeValues: {
-                    ":uid": userId
-                }
-            }));
+        const result = await dynamo.send(new QueryCommand({
+            TableName: CONVERSATIONS_TABLE_NAME,
+            KeyConditionExpression: "userId = :uid",
+            ExpressionAttributeValues: {
+                ":uid": userId
+            }
+        }));
+
+        const sortedItems = (result.Items || []).sort((a, b) => b.lastUpdated - a.lastUpdated);
 
         return {
             statusCode: 200,
@@ -23,7 +25,7 @@ export const handler = async (event) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    conversations: result.Items || []
+                    conversations: sortedItems
                 })
             };
     } catch (error) {
