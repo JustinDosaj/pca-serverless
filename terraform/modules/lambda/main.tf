@@ -82,3 +82,22 @@ resource "aws_lambda_function" "get_messages" {
     timeout = 10
     memory_size = 256
 }
+
+data "archive_file" "delete_conversation_zip" {
+    type = "zip"
+    source_dir = "${path.root}/../../../functions/delete-conversation"
+    output_path = "${path.root}/builds/delete-conversation.zip"
+}
+
+resource "aws_lambda_function" "delete_conversation" {
+    function_name = "${var.environment}_delete_conversation"
+    handler = "index.handler"
+    runtime = "nodejs22.x"
+
+    filename = data.archive_file.delete_conversation_zip.output_path
+    source_code_hash = data.archive_file.delete_conversation_zip.output_base64sha256
+    
+    role = "${var.iam_role_arn}"    
+    timeout = 10
+    memory_size = 256
+}

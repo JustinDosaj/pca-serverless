@@ -46,7 +46,7 @@ resource "aws_apigatewayv2_route" "chat_route" {
   target = "integrations/${aws_apigatewayv2_integration.chat_integration.id}"
 }
 
-# Integration between API and get conversation function
+# API integrations and Routes for Conversations
 resource "aws_apigatewayv2_integration" "get_conversations_integration" {
   api_id             = aws_apigatewayv2_api.private_chat_api.id
   integration_type   = "AWS_PROXY"
@@ -55,7 +55,6 @@ resource "aws_apigatewayv2_integration" "get_conversations_integration" {
   payload_format_version = "2.0" 
 }
 
-# Route for your chat endpoint with authorization - CORRECTED
 resource "aws_apigatewayv2_route" "get_conversations_route" {
   api_id    = aws_apigatewayv2_api.private_chat_api.id
   route_key = "GET /conversations"
@@ -65,6 +64,25 @@ resource "aws_apigatewayv2_route" "get_conversations_route" {
   
   # Link directly to the integration
   target = "integrations/${aws_apigatewayv2_integration.get_conversations_integration.id}"
+}
+
+resource "aws_apigatewayv2_integration" "delete_conversation_integration" {
+  api_id             = aws_apigatewayv2_api.private_chat_api.id
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+  integration_uri    = var.delete_conversation_invoke_arn # Swap this function
+  payload_format_version = "2.0" 
+}
+
+resource "aws_apigatewayv2_route" "delete_conversation_route" {
+  api_id    = aws_apigatewayv2_api.private_chat_api.id
+  route_key = "DELETE /conversations/{conversationId}"
+  
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+  
+  # Link directly to the integration
+  target = "integrations/${aws_apigatewayv2_integration.delete_conversation_integration.id}"
 }
 
 # Inegration between API and get messages function
@@ -117,6 +135,16 @@ resource "aws_lambda_permission" "get_conversations_permission" {
   
   # More specific source_arn for HTTP API
   source_arn = "${aws_apigatewayv2_api.private_chat_api.execution_arn}/*/*/conversations"
+}
+
+resource "aws_lambda_permission" "delete_conversation_permission" {
+  statement_id  = "AllowChatAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.environment}_delete_conversation"
+  principal     = "apigateway.amazonaws.com"
+  
+  # More specific source_arn for HTTP API
+  source_arn = "${aws_apigatewayv2_api.private_chat_api.execution_arn}/*/*/conversations/*"
 }
 
 resource "aws_lambda_permission" "get_messages_permission" {

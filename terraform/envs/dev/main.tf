@@ -28,8 +28,10 @@ module "api_gateway_module" {
     # Chat Completion ARN & Function URL
     chat_completion_invoke_arn    = module.lambda_module.chat_completion_invoke_arn
 
-    # Get Conversations ARN
+    # Conversations ARNs
     get_conversations_invoke_arn = module.lambda_module.get_conversations_invoke_arn
+    delete_conversation_invoke_arn = module.lambda_module.delete_conversation_invoke_arn
+
 
     # Get Messages ARN
     get_messages_invoke_arn = module.lambda_module.get_messages_invoke_arn
