@@ -31,7 +31,7 @@ module "api_gateway_module" {
     # Conversations ARNs
     get_conversations_invoke_arn = module.lambda_module.get_conversations_invoke_arn
     delete_conversation_invoke_arn = module.lambda_module.delete_conversation_invoke_arn
-
+    edit_conversation_invoke_arn = module.lambda_module.edit_conversation_invoke_arn
 
     # Get Messages ARN
     get_messages_invoke_arn = module.lambda_module.get_messages_invoke_arn

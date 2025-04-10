@@ -13,6 +13,11 @@ output "delete_conversation_invoke_arn" {
     value = aws_lambda_function.delete_conversation.invoke_arn
 }
 
+# Edit Conversation
+output "edit_conversation_invoke_arn" {
+    value = aws_lambda_function.edit_conversation.invoke_arn
+}
+
 # Get Messages
 output "get_messages_invoke_arn" {
     value = aws_lambda_function.get_messages.invoke_arn

@@ -26,6 +26,12 @@ variable "delete_conversation_invoke_arn" {
     description = "Delete Conversation Invoke ARN"
 }
 
+# Edit Conversation
+variable "edit_conversation_invoke_arn" {
+    type = string
+    description = "Edit Conversation Invoke ARN"
+}
+
 # Get Messages
 variable "get_messages_invoke_arn" {
     type = string

@@ -3,6 +3,10 @@
 export const handler = async (event) => {
     try {
 
+        console.log("Event: ", event)
+        const conversationId = event.pathParameters.conversationId;
+
+
         return {
             statusCode: 200,
                 headers: {
@@ -10,7 +14,7 @@ export const handler = async (event) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    conversations: sortedItems
+                    content: conversationId
                 })
             };
     } catch (error) {

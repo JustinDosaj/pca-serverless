@@ -70,7 +70,7 @@ resource "aws_apigatewayv2_integration" "delete_conversation_integration" {
   api_id             = aws_apigatewayv2_api.private_chat_api.id
   integration_type   = "AWS_PROXY"
   integration_method = "POST"
-  integration_uri    = var.delete_conversation_invoke_arn # Swap this function
+  integration_uri    = var.delete_conversation_invoke_arn
   payload_format_version = "2.0" 
 }
 
@@ -83,6 +83,25 @@ resource "aws_apigatewayv2_route" "delete_conversation_route" {
   
   # Link directly to the integration
   target = "integrations/${aws_apigatewayv2_integration.delete_conversation_integration.id}"
+}
+
+resource "aws_apigatewayv2_integration" "edit_conversation_integration" {
+  api_id             = aws_apigatewayv2_api.private_chat_api.id
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+  integration_uri    = var.edit_conversation_invoke_arn# Swap this function
+  payload_format_version = "2.0" 
+}
+
+resource "aws_apigatewayv2_route" "edit_conversation_route" {
+  api_id    = aws_apigatewayv2_api.private_chat_api.id
+  route_key = "PUT /conversations/{conversationId}"
+  
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+  
+  # Link directly to the integration
+  target = "integrations/${aws_apigatewayv2_integration.edit_conversation_integration.id}"
 }
 
 # Inegration between API and get messages function
@@ -141,6 +160,16 @@ resource "aws_lambda_permission" "delete_conversation_permission" {
   statement_id  = "AllowChatAPIInvoke"
   action        = "lambda:InvokeFunction"
   function_name = "${var.environment}_delete_conversation"
+  principal     = "apigateway.amazonaws.com"
+  
+  # More specific source_arn for HTTP API
+  source_arn = "${aws_apigatewayv2_api.private_chat_api.execution_arn}/*/*/conversations/*"
+}
+
+resource "aws_lambda_permission" "edit_conversation_permission" {
+  statement_id  = "AllowChatAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.environment}_edit_conversation"
   principal     = "apigateway.amazonaws.com"
   
   # More specific source_arn for HTTP API
