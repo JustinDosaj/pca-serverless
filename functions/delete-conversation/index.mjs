@@ -8,7 +8,7 @@ export const handler = async (event) => {
 
         console.log("Event: ", event)
         const userId = event.requestContext.authorizer.jwt.claims.sub
-        const conversationId = event.pathParameters.conversationId;
+        const conversationId = event.pathParameters.conversationId
 
         if (!conversationId || !userId) {
             return {

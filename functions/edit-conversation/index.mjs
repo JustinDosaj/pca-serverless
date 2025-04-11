@@ -1,11 +1,43 @@
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
+const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }))
+const CONVERSATIONS_TABLE_NAME = 'dev_Conversations'
 
 export const handler = async (event) => {
+
+    console.log("Event: ", event)
+    const userId = event.requestContext.authorizer.jwt.claims.sub
+    const conversationId = event.pathParameters.conversationId
+    const body = JSON.parse(event.body)
+    const title = body.title || null
+    const timestamp = Date.now()
+    const currentUnixTime = Math.floor(timestamp / 1000)
+    const expiresAt = currentUnixTime + 30 * 24 * 60 * 60
+
+    if (!conversationId || !userId || !title) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ message: "Missing conversationId, userId or title", success: false }),
+        };
+    }
+    
     try {
-
-        console.log("Event: ", event)
-        const conversationId = event.pathParameters.conversationId;
-
+        
+        await dynamo.send(new UpdateCommand({
+            TableName: CONVERSATIONS_TABLE_NAME,
+            Key: {
+                userId: userId,
+                conversationId: conversationId
+            },
+            UpdateExpression: "set title = :title, lastUpdated = :lastUpdated, expiresAt = :expiresAt",
+            ExpressionAttributeValues: {
+                ":title": title,
+                ":lastUpdated": timestamp,
+                ":expiresAt": expiresAt,
+            },
+            ReturnValues: "UPDATED_NEW"
+        }))
 
         return {
             statusCode: 200,
@@ -14,7 +46,7 @@ export const handler = async (event) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    content: conversationId
+                    success: true
                 })
             };
     } catch (error) {
@@ -25,7 +57,7 @@ export const handler = async (event) => {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ error: error.message })
+                body: JSON.stringify({ error: error.message, success: false })
             };
     }
 };
