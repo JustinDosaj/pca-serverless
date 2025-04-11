@@ -38,8 +38,6 @@ export const handler = async (event) => {
                     }
                 }));
 
-                console.log("RESULT: ", result)
-
                 if (result.Items) {
                     title = result.Items[0].title;
                     console.log("EXISTING TITLE: ", title)
