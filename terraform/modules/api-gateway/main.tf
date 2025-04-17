@@ -6,7 +6,7 @@ resource "aws_apigatewayv2_api" "private_chat_api" {
   cors_configuration {
     allow_credentials = true
     allow_headers     = ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"]
-    allow_methods     = ["POST", "GET", "OPTIONS"]
+    allow_methods     = ["POST", "GET", "OPTIONS", "DELETE", "PUT"]
     allow_origins     = ["http://localhost:3000"] # Add your frontend origins here
     max_age           = 240 # 3 minutes
   }

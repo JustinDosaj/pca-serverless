@@ -105,7 +105,7 @@ resource "aws_lambda_function" "delete_conversation" {
 data "archive_file" "edit_conversation_zip" {
     type = "zip"
     source_dir = "${path.root}/../../../functions/edit-conversation"
-    output_path = "${path.root}/builds/delete-conversation.zip"
+    output_path = "${path.root}/builds/edit-conversation.zip"
 }
 
 resource "aws_lambda_function" "edit_conversation" {
