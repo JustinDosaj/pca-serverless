@@ -5,7 +5,7 @@ provider "aws" {
 
 module "iam_module" {
     source = "../../modules/iam"
-    account_id = "211125545153"
+    account_id = var.iam_account_id
     environment = var.environment
     api_id = module.api_gateway_module.api_id
     users_table_arn = module.dynamodb_module.users_table_arn
@@ -36,9 +36,8 @@ module "api_gateway_module" {
     # Get Messages ARN
     get_messages_invoke_arn = module.lambda_module.get_messages_invoke_arn
     
-    # Add these variables with values from your Amplify project
-    cognito_user_pool_id       = "us-west-1_9ZbuQizvZ" # Replace with your actual Amplify-created User Pool ID
-    cognito_user_pool_client_id = "30oarcfi7d6rseca2234957fm6" # Replace with your actual Amplify-created App Client ID
+    cognito_user_pool_id = var.cognito_id
+    cognito_user_pool_client_id = var.cognito_client_id
 }
 
 module "dynamodb_module" {
