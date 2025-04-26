@@ -19,7 +19,7 @@ export const handler = async (event) => {
         const sortedItems = (result.Items || []).sort((a, b) => b.lastUpdated - a.lastUpdated);
 
         return {
-            statusCode: 200,
+                statusCode: 200,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json'
