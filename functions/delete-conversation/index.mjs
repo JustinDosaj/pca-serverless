@@ -35,7 +35,7 @@ export const handler = async (event) => {
             body: JSON.stringify({
                 success: true
             })
-            };
+        };
     } catch (error) {
             console.error("Error:", error);
             return {
