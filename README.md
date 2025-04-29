@@ -1,15 +1,12 @@
 # Private Chat Project - Frontend
-This repository contains the serverless backend for the private chat app, managing infrastructure-as-code with [Terraform](https://developer.hashicorp.com/terraform) and writing lambda functions using [Node.js 22](https://nodejs.org/en). This frontend provides the user interface and client-side functionality. It interacts with serverless APIs deployed 
-separately through the [pca-serverless](https://github.com/JustinDosaj/pca-serverless) repository.
+This repository contains the serverless backend for the private chat app, managing infrastructure-as-code with [Terraform](https://developer.hashicorp.com/terraform) and writing lambda functions using [Node.js 22](https://nodejs.org/en).
 
 ## Project Overview
 The overall goal of this project is to allow a typical LLM conversation to take place, but with the option to automatically remove personal identifiable information while maintaining original message context.
 
-
 ### Features
-- Built infrastructure-as-code with Terraform
-- Setup DynamoDB tables to store user infromation, conversation history, and messages
-- Integrated with APIs for dynamic data integration
+- Deploy and entirely serverless backend using [Terraform](https://www.terraform.io/) Infrastructure-as-Code
+- Personal Identifiable Information is removed from chat messages before sending to third-party servers (see `Project Status` section).
 
 ## Tech Stack
 - **Infrastructure-as-Code**: [Terraform](https://www.terraform.io/)
