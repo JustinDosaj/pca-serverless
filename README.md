@@ -37,7 +37,7 @@ Create a `terraform.tfvars` inside either env folder then define the variables. 
 Before you begin, make sure you have the following installed:
 
 - [Node.js 22](https://nodejs.org/) (LTS version recommended)
-- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)()
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
 ### Steps to Install
 
