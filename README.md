@@ -7,10 +7,9 @@ separately through the [pca-serverless](https://github.com/JustinDosaj/pca-serve
 
 
 ### Features
-- Built with Next.js for server-side rendering and optimized performance
-- Hosted and managed with AWS Amplify
+- Built infrastructure-as-code with Terraform
+- Setup DynamoDB tables to store user infromation, conversation history, and messages
 - Integrated with APIs for dynamic data integration
-- Modern UI with responsive design
 
 ## Tech Stack
 - **Infrastructure-as-Code**: [Terraform](https://www.terraform.io/)
@@ -29,7 +28,7 @@ The following environment variables are required for the app to function properl
 | `cognito_id` | Cognito User Pool ID from AWS Amplify Auth (found in cognito console) |
 | `cognito_client_id` | Cognito Client ID from AWS Amplify Auth
 
-Create a `terraform.tfvars` inside either env folder and define the variables. The `variables.tf` file contains the information required to access the env variables from `main.tf` 
+Create a `terraform.tfvars` inside either env folder then define the variables. The `variables.tf` file contains the information required to access the env variables from `main.tf`.  
 
 ## Installation
 
