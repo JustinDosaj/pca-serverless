@@ -1,4 +1,4 @@
-# Private Chat Project - Frontend
+# Private Chat Project - Backend
 This repository contains the serverless backend for the private chat app, managing infrastructure-as-code with [Terraform](https://developer.hashicorp.com/terraform) and writing lambda functions using [Node.js 22](https://nodejs.org/en).
 
 ## Project Overview
