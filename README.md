@@ -40,7 +40,7 @@ Before you begin, make sure you have the following installed:
 
 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/pca-serverless.git
+git clone https://github.com/JustinDosaj/pca-serverless.git
 ```
 
 2. Navigate to Project Directory
