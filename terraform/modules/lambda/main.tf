@@ -13,6 +13,7 @@ resource "aws_lambda_layer_version" "chat_layer" {
     source_code_hash = data.archive_file.chat_packages_zip.output_base64sha256
     
     compatible_runtimes = ["nodejs22.x"]
+    
 }
 
 # Completions
@@ -41,6 +42,10 @@ resource "aws_lambda_function" "chat_completion" {
             OPENAI_API_KEY = "${var.openai_api_key}"
         }
     }
+
+    tags = {
+        name = "${var.environment}_chat_completion"
+    }
 }
 
 # Conversations
@@ -62,6 +67,9 @@ resource "aws_lambda_function" "get_conversations" {
     timeout = 10
     memory_size = 256
 
+    tags = {
+        name = "${var.environment}_get_conversations"
+    }
 }
 
 data "archive_file" "get_messages_zip" {
@@ -81,6 +89,10 @@ resource "aws_lambda_function" "get_messages" {
     role = "${var.iam_role_arn}"    
     timeout = 10
     memory_size = 256
+
+    tags = {
+        name = "${var.environment}_get_messages"
+    }
 }
 
 data "archive_file" "delete_conversation_zip" {
@@ -100,6 +112,10 @@ resource "aws_lambda_function" "delete_conversation" {
     role = "${var.iam_role_arn}"    
     timeout = 10
     memory_size = 256
+
+    tags = {
+        name = "${var.environment}_delete_conversation"
+    }
 }
 
 data "archive_file" "edit_conversation_zip" {
@@ -119,4 +135,8 @@ resource "aws_lambda_function" "edit_conversation" {
     role = "${var.iam_role_arn}"    
     timeout = 10
     memory_size = 256
+
+    tags = {
+        name = "${var.environment}_edit_conversation"
+    }
 }

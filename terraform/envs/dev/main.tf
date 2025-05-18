@@ -1,6 +1,13 @@
 provider "aws" {
     region      = var.region
     profile     = var.aws-profile
+
+    default_tags {
+        tags = {
+            Environment = var.environment
+            Project = "pca-amplify"
+        }
+    }
 }
 
 module "iam_module" {

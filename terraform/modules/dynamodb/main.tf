@@ -9,8 +9,7 @@ resource "aws_dynamodb_table" "users_table" {
     }
 
     tags = {
-        name = "${var.environment}_Users"
-        environment = var.environment
+        Name = "${var.environment}_Users"
     }
 }
 
@@ -44,7 +43,6 @@ resource "aws_dynamodb_table" "conversations_table" {
 
     tags = {
         name = "${var.environment}_Conversations"
-        environment = var.environment
     }
 
     ttl {
@@ -89,6 +87,5 @@ resource "aws_dynamodb_table" "messages_table" {
 
     tags = {
         name = "${var.environment}_Messages"
-        environment = var.environment
     }
 }
