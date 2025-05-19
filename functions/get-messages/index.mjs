@@ -3,7 +3,7 @@ import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 // TODO: Get conversation id from event then get all messages from dynamodb
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }));
-const MESSAGES_TABLE_NAME = 'dev_PCA_Messages';
+const MESSAGES_TABLE_NAME = 'dev_pca_messages';
 
 export const handler = async (event) => {
 

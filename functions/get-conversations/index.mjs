@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }));
-const CONVERSATIONS_TABLE_NAME = 'dev_PCA_Conversations';
+const CONVERSATIONS_TABLE_NAME = 'dev_pca_conversations';
 
 export const handler = async (event) => {
     try {
