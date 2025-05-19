@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "users_table" {
-    name = "${var.environment}_Users"
+    name = "${var.environment}_PCA_Users"
     billing_mode = "PAY_PER_REQUEST"
     hash_key = "userId"
 
@@ -9,12 +9,12 @@ resource "aws_dynamodb_table" "users_table" {
     }
 
     tags = {
-        Name = "${var.environment}_Users"
+        Name = "${var.environment}_Chat_Users"
     }
 }
 
 resource "aws_dynamodb_table" "conversations_table" {
-    name = "${var.environment}_Conversations"
+    name = "${var.environment}_PCA_Conversations"
     billing_mode = "PAY_PER_REQUEST"
     hash_key = "userId"
     range_key = "conversationId"
@@ -42,7 +42,7 @@ resource "aws_dynamodb_table" "conversations_table" {
     }
 
     tags = {
-        name = "${var.environment}_Conversations"
+        name = "${var.environment}_PCA_Conversations"
     }
 
     ttl {
@@ -52,7 +52,7 @@ resource "aws_dynamodb_table" "conversations_table" {
 }
 
 resource "aws_dynamodb_table" "messages_table" {
-    name = "${var.environment}_Messages"
+    name = "${var.environment}_PCA_Messages"
     billing_mode = "PAY_PER_REQUEST"
     hash_key = "conversationId"
     range_key = "timestamp"
@@ -86,6 +86,6 @@ resource "aws_dynamodb_table" "messages_table" {
     }
 
     tags = {
-        name = "${var.environment}_Messages"
+        name = "${var.environment}_PCA_Messages"
     }
 }

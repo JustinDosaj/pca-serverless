@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }))
-const CONVERSATIONS_TABLE_NAME = 'dev_Conversations'
+const CONVERSATIONS_TABLE_NAME = 'dev_PCA_Conversations'
 
 export const handler = async (event) => {
 

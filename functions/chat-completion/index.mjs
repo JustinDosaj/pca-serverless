@@ -10,8 +10,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 // Init DynamoDB
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }))
 // const USERS_TABLE_NAME = "dev_Users"
-const CONVERSATIONS_TABLE_NAME = 'dev_Conversations'
-const MESSAGES_TABLE_NAME = 'dev_Messages'
+const CONVERSATIONS_TABLE_NAME = 'dev_PCA_Conversations'
+const MESSAGES_TABLE_NAME = 'dev_PCA_Messages'
 
 export const handler = async (event) => {
 
