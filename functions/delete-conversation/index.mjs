@@ -4,6 +4,8 @@ import { DeleteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }))
 const CONVERSATIONS_TABLE_NAME = 'dev_pca_conversations'
 
+/* Messages attached to conversations do not get deleted --> TTL kicks in after 30 days*/
+
 export const handler = async (event) => {
 
         console.log("Event: ", event)
