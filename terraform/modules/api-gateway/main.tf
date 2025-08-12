@@ -29,27 +29,6 @@ resource "aws_apigatewayv2_authorizer" "cognito_authorizer" {
     }
 }
 
-# Integration between the API and your Lambda function
-resource "aws_apigatewayv2_integration" "chat_integration" {
-    api_id             = aws_apigatewayv2_api.private_chat_api.id
-    integration_type   = "AWS_PROXY"
-    integration_method = "POST"
-    integration_uri    = var.chat_completion_invoke_arn
-    payload_format_version = "2.0"
-}
-
-# Route for your chat endpoint with authorization
-resource "aws_apigatewayv2_route" "chat_route" {
-    api_id    = aws_apigatewayv2_api.private_chat_api.id
-    route_key = "POST /chat"
-    
-    authorization_type = "JWT"
-    authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
-    
-    # Link directly to the integration
-    target = "integrations/${aws_apigatewayv2_integration.chat_integration.id}"
-}
-
 # API integrations and Routes for Conversations
 resource "aws_apigatewayv2_integration" "get_conversations_integration" {
     api_id             = aws_apigatewayv2_api.private_chat_api.id
@@ -108,7 +87,27 @@ resource "aws_apigatewayv2_route" "edit_conversation_route" {
     target = "integrations/${aws_apigatewayv2_integration.edit_conversation_integration.id}"
 }
 
-# Inegration between API and get messages function
+# API integrations and Routes for chats
+
+resource "aws_apigatewayv2_integration" "chat_integration" {
+    api_id             = aws_apigatewayv2_api.private_chat_api.id
+    integration_type   = "AWS_PROXY"
+    integration_method = "POST"
+    integration_uri    = var.chat_completion_invoke_arn
+    payload_format_version = "2.0"
+}
+
+resource "aws_apigatewayv2_route" "chat_route" {
+    api_id    = aws_apigatewayv2_api.private_chat_api.id
+    route_key = "POST /chat"
+    
+    authorization_type = "JWT"
+    authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+    
+    # Link directly to the integration
+    target = "integrations/${aws_apigatewayv2_integration.chat_integration.id}"
+}
+
 resource "aws_apigatewayv2_integration" "get_messages_integration" {
     api_id             = aws_apigatewayv2_api.private_chat_api.id
     integration_type   = "AWS_PROXY"

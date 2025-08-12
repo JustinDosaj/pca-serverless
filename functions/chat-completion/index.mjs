@@ -2,6 +2,7 @@
 import OpenAI from "openai"
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb"
+import { ComprehendClient, DetectPiiEntitiesCommand } from "@aws-sdk/client-comprehend"
 import { v4 as uuidv4 } from "uuid"
 
 // Init OpenAI
@@ -9,6 +10,10 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 // Init DynamoDB
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-west-1" }))
+
+// Init Comprehend
+const comprehend= new ComprehendClient({region: "us-west-2"})
+
 // const USERS_TABLE_NAME = "dev_Users"
 const CONVERSATIONS_TABLE_NAME = 'dev_pca_conversations'
 const MESSAGES_TABLE_NAME = 'dev_pca_messages'
@@ -16,12 +21,14 @@ const MESSAGES_TABLE_NAME = 'dev_pca_messages'
 export const handler = async (event) => {
 
     try {
+
         const userId = event.requestContext.authorizer.jwt.claims.sub // from Cognito JWT
         const body = JSON.parse(event.body)
         const message = body.message || 'Write a one sentence story about a unicorn.'
-        const conversationId = body.conversationId || uuidv4() 
+        const conversationId = body.conversationId || uuidv4()
+        const privacySettings = body.privacySettings 
         const timestamp = Date.now()
-        const timestamp_response = timestamp + 1 // Ensure timestamp is never equal
+        const timestamp_response = timestamp + 1 // Ensure timestamp_response is never equal with timestamp
 
         let title = !body.conversationId ? message.slice(0, 30) : ''
 
@@ -48,16 +55,24 @@ export const handler = async (event) => {
             }
         }
 
-        // Send to OpenAI
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                { role: "system", content: "Respond in Markdown format recognizable by React Markdown with remarkGfm" },
-                { role: "user", content: message }
-            ],
-        })
+        const allowedPiiTypes = cleanSettings(privacySettings)
 
-        const response = completion.choices[0].message.content
+        const piiEntities = await detectPiiEntities(message, allowedPiiTypes)
+
+        const cleanedMessage = await removeDetections(message, piiEntities)
+
+        //const response = await sendChatMessage(cleanedMessage)
+
+        // Send to OpenAI
+        // const completion = await openai.chat.completions.create({
+        //     model: "gpt-3.5-turbo",
+        //     messages: [
+        //         { role: "system", content: "Respond in Markdown format recognizable by React Markdown with remarkGfm" },
+        //         { role: "user", content: message }
+        //     ],
+        // })
+
+        // const response = completion.choices[0].message.content
         const currentUnixTime = Math.floor(timestamp / 1000)
         const expiresAt = currentUnixTime + 30 * 24 * 60 * 60
 
@@ -81,7 +96,8 @@ export const handler = async (event) => {
                 userId: userId,
                 conversationId: conversationId,
                 sender: "bot",
-                content: response,
+                // Changed from response to cleanedMesage while removing LLM response
+                content: cleanedMessage,
                 timestamp: timestamp_response,
                 expiresAt: expiresAt,
             }
@@ -109,7 +125,7 @@ export const handler = async (event) => {
             },
             body: JSON.stringify({
                 conversationId: conversationId,
-                content: response
+                content: cleanedMessage
             })
         }
 
@@ -123,5 +139,104 @@ export const handler = async (event) => {
             },
             body: JSON.stringify({ error: error.message })
         }
+    }
+}
+
+function cleanSettings(settings) {
+
+    console.log("Settings Before Clean: ", settings)
+
+    const val = Object.keys(settings).filter((key) => settings[key])
+
+    console.log("Settings After Clean: ", val)
+
+    return Object.keys(settings).filter((key) => settings[key])
+}
+
+async function detectPiiEntities(message, allowedTypes) {
+    
+    const allowedSet = new Set(allowedTypes)
+
+    try {
+        
+        const command = new DetectPiiEntitiesCommand({
+            Text: message,
+            LanguageCode: "en"
+        })
+
+        const res = await comprehend.send(command)
+        const entities = (res?.Entities || []).filter(
+            (entity) => entity.Type && allowedSet.has(entity.Type)
+        )
+
+        console.log("Detected PII Entities: ", entities)
+
+        return entities
+
+    } catch (error) {
+        console.error("Error detecting PII: ", error)
+        throw error
+    }
+}
+
+async function removeDetections(message, entities) {
+
+    try {
+    
+        const wordMap = new Map();
+
+        let index = 0
+        
+        entities.forEach((entity) => {
+            const start = entity.BeginOffset || 0
+            const end = entity.EndOffset || 0
+            const word = message.substring(start, end)
+            const type = entity.Type || "UNKNOWN"
+
+            if (wordMap.has(type)) {
+                wordMap.get(type).push({word, index})
+            } else {
+                wordMap.set(type, [{word, index}])
+            }
+            index++;
+        })
+
+        wordMap.forEach((arr, type) => {
+            for (let i = 0; i < arr.length; i++) {
+                const entity = entities[arr[i].index]
+                const wordLength = (entity.EndOffset || 0) - (entity.BeginOffset || 0)
+                const startIdx = message.indexOf(arr[i].word);
+                const endIdx = startIdx + wordLength;
+                const original = message.substring(startIdx, endIdx)
+                const replacement = `[${type}_${i}]`
+                message = message.replace(original, replacement)
+            }
+        })
+
+        return message
+        
+    } catch (error) {
+        console.error("Error removing PII entities: ", error)
+        throw error
+    }
+}
+
+async function sendChatMessage(message) {
+
+    try {
+        
+        const completion = await openai.chat.completion.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "Respond in Markdown format recognizable by React Markdown with remarkGfm" },
+                { role: "user", content: message },
+            ],
+        })
+
+        return completion.choices[0].message.content;
+
+    } catch (error) {
+        console.error('Error recieving LLM response: ', error)
+        throw error
     }
 }

@@ -15,6 +15,31 @@ resource "aws_iam_role" "iam_for_lambda" {
     }
 }
 
+resource "aws_iam_policy" "comprehend_access" {
+    name        = "${var.environment}_PCA_ComprehendAccess"
+    description = "Allows Lambda to use Amazon Comprehend for NLP tasks"
+
+    policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [{
+        Effect = "Allow",
+        Action = [
+            "comprehend:DetectDominantLanguage",
+            "comprehend:DetectEntities",
+            "comprehend:DetectKeyPhrases",
+            "comprehend:DetectSentiment",
+            "comprehend:DetectSyntax",
+            "comprehend:DetectPiiEntities"
+        ],
+        Resource = "*"
+        }]
+    })
+
+    tags = {
+        name = "${var.environment}_ComprehendAccess"
+    }
+}
+
 resource "aws_iam_role_policy" "lambda_logs" {
     name   = "lambda-logs-policy"
     role   = aws_iam_role.iam_for_lambda.name
@@ -61,6 +86,11 @@ resource "aws_iam_policy" "dynamodb_chat_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_dynamo_attach" {
-  role       = aws_iam_role.iam_for_lambda.name
-  policy_arn = aws_iam_policy.dynamodb_chat_access.arn
+    role       = aws_iam_role.iam_for_lambda.name
+    policy_arn = aws_iam_policy.dynamodb_chat_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_comprehend_attach" {
+    role       = aws_iam_role.iam_for_lambda.name
+    policy_arn = aws_iam_policy.comprehend_access.arn
 }
