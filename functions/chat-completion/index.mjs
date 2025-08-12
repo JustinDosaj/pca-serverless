@@ -61,7 +61,7 @@ export const handler = async (event) => {
 
         const cleanedMessage = await removeDetections(message, piiEntities)
 
-        //const response = await sendChatMessage(cleanedMessage)
+        const response = await sendChatMessage(cleanedMessage)
 
         const currentUnixTime = Math.floor(timestamp / 1000)
         const expiresAt = currentUnixTime + 30 * 24 * 60 * 60
@@ -87,7 +87,7 @@ export const handler = async (event) => {
                 conversationId: conversationId,
                 sender: "bot",
                 // Changed from response to cleanedMesage while removing LLM response
-                content: cleanedMessage,
+                content: response,
                 timestamp: timestamp_response,
                 expiresAt: expiresAt,
             }
@@ -115,7 +115,7 @@ export const handler = async (event) => {
             },
             body: JSON.stringify({
                 conversationId: conversationId,
-                content: cleanedMessage
+                content: response
             })
         }
 
@@ -215,13 +215,15 @@ async function sendChatMessage(message) {
 
     try {
         
-        const completion = await openai.chat.completion.create({
+        const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
-                { role: "system", content: "Respond in Markdown format recognizable by React Markdown with remarkGfm" },
+                { role: "system", content: "Your response must be exactly what the user sent. Do not make changes or alternations, only respond in Markdown format recognizable by React Markdown with remarkGfm" },
                 { role: "user", content: message },
             ],
         })
+
+        console.log("Completion: ", completion)
 
         return completion.choices[0].message.content;
 
