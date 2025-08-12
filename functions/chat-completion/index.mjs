@@ -63,16 +63,6 @@ export const handler = async (event) => {
 
         //const response = await sendChatMessage(cleanedMessage)
 
-        // Send to OpenAI
-        // const completion = await openai.chat.completions.create({
-        //     model: "gpt-3.5-turbo",
-        //     messages: [
-        //         { role: "system", content: "Respond in Markdown format recognizable by React Markdown with remarkGfm" },
-        //         { role: "user", content: message }
-        //     ],
-        // })
-
-        // const response = completion.choices[0].message.content
         const currentUnixTime = Math.floor(timestamp / 1000)
         const expiresAt = currentUnixTime + 30 * 24 * 60 * 60
 
