@@ -216,9 +216,9 @@ async function sendChatMessage(message) {
     try {
         
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o",
             messages: [
-                { role: "system", content: "Your response must be exactly what the user sent. Do not make changes or alternations, only respond in Markdown format recognizable by React Markdown with remarkGfm" },
+                { role: "system", content: "Your response must be exactly what the user sent. Do not make changes or alternations to wording, only respond in Markdown format recognizable by React Markdown with remarkGfm. You are allowed to adjust the content into the markdown format that makes the most sense given the content." },
                 { role: "user", content: message },
             ],
         })
